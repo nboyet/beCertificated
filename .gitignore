@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# local candidate use-case backlog
+/UC_TO_DO.md

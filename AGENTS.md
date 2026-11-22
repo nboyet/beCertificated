@@ -22,6 +22,14 @@ Keep domain rules and application use cases reusable across mobile interfaces an
 
 Preserve validation, error handling, accessibility, privacy, and security. Include relevant failure behavior in the agreed use cases and tests. Offline operations and retried synchronization must not duplicate progress, XP, or review consumption.
 
+## Implementation conventions
+
+Keep one primary responsibility per use case in a `.use-case.ts` file. Functional implementations are welcome; no base classes or framework are required. When using functional programming, explain the choice and how dependencies are passed explicitly. Put domain entities in `entities/` and relevant value objects in `value-objects/`, using readonly Zod-inferred types. Schemas describe the agreed shapes; runtime validation policy remains open. Keep application reader interfaces and result types at the application boundary.
+
+Use ZOMBIES to guide observable examples as relevant to the agreed contract. Prioritize observable outputs with keyed in-memory fakes and returned outcomes. Never use interaction assertions such as `toHaveBeenCalledWith`.
+
 ## Immediate next step
 
-Collaboratively write the first use case and then its test cases for the proposed bilingual Azure Container Registry slice in PRODUCT_RULES.md. The proposal is not an agreed executable use case. Roadmap features do not authorize implementation. The user has explicitly authorized the Expo default scaffold and its setup checks. This setup authorization does not authorize product behavior or test implementation; collaborate on the first use case and tests before implementing the learning slice.
+The **Open a downloaded lesson** and **Save a course offline** contracts in PRODUCT_RULES.md are agreed and implemented test-first; all 11 Vitest tests and the TypeScript check pass. The authorized Expo Lessons/Downloads preview persists synthetic lesson content and metadata with AsyncStorage 2.2.0: only the first 2 of 8 sample lessons can be saved in the selected locale, partial saves are retained for retry, and stored localizations open through the existing use case.
+
+Collaborate explicitly on the remaining production contracts and tests before implementing them, including authentication, course delivery/access, learner-data persistence, completion, and synchronization. Roadmap requirements and Expo scaffold authorization do not authorize additional behavior.
