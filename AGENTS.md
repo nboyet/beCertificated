@@ -24,4 +24,4 @@ Preserve validation, error handling, accessibility, privacy, and security. Inclu
 
 ## Immediate next step
 
-Collaboratively write the first use case and then its test cases for the proposed bilingual Azure Container Registry slice in PRODUCT_RULES.md. The proposal is not an agreed executable use case. Roadmap features do not authorize implementation. Current authorization is documentation only: do not create application/test files or initialize a framework.
+Collaboratively write the first use case and then its test cases for the proposed bilingual Azure Container Registry slice in PRODUCT_RULES.md. The proposal is not an agreed executable use case. Roadmap features do not authorize implementation. The user has explicitly authorized the Expo default scaffold and its setup checks. This setup authorization does not authorize product behavior or test implementation; collaborate on the first use case and tests before implementing the learning slice.

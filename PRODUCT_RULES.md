@@ -4,7 +4,7 @@
 
 This is the authoritative product specification. [AGENTS.md](AGENTS.md) defines the mandatory workflow. Requirements below are settled unless explicitly labelled proposed or unresolved. Open questions must remain open until agreed with the user; they must not become implicit implementation defaults.
 
-Current scope is these three documentation files only. Settled requirements and roadmap features do not authorize implementation. No framework or application implementation is authorized. Collaboratively write the precise first use case and then its tests before implementation, and repeat use-case-first and test-first collaboration for every behavior change.
+The user has selected Expo and explicitly authorized its default project scaffold and setup checks. Settled requirements and roadmap features do not authorize product implementation. Collaboratively write the precise first use case and then its tests before implementation, and repeat use-case-first and test-first collaboration for every behavior change.
 
 ## Product and architecture
 
@@ -86,7 +86,7 @@ The exact actor journey, lesson boundaries, starting state, quiz/review inclusio
 
 These questions are separate from the settled rules above. Resolve only what the next agreed use case needs, with the user:
 
-- **Technology:** stack, framework, mobile platforms, distribution, backend, persistence, sync transport, test tools, and hosting.
+- **Technology:** Expo is selected for the mobile scaffold. Mobile platforms, distribution, backend, persistence, sync transport, test tools, hosting, and remaining stack choices are unresolved.
 - **Identity:** authentication provider/methods, account lifecycle, offline sign-in/session validity, and account-switch behavior.
 - **Commercial terms:** billing provider, price, purchase model, entitlement duration/scope, confirmation, restoration, refunds, and regional billing rules.
 - **Learning model:** exact mastery criteria and calculation/evidence, quiz structure, mistake-count scope, reread completion, review session definition and daily reset.
