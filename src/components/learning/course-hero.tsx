@@ -1,156 +1,63 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text } from "@/components/ui/text";
+import { cn } from "@/lib/utils";
+import { View } from "react-native";
 
 export function CourseHero({ compact }: { compact: boolean }) {
   return (
-    <View style={[styles.hero, compact && { marginBottom: 20 }]}>
-      <View style={[styles.heroCopy, compact && { padding: 20 }]}>
-        <Text style={styles.heroKicker}>THE AI-200 LEARNING PATH</Text>
-        <Text style={styles.heroTitle}>Azure AI Developer</Text>
-        <Text style={styles.heroDescription}>
+    <View
+      className={cn(
+        "flex-row flex-wrap bg-[#153E3B] rounded-[24px] overflow-hidden mb-[36px]",
+        compact && "mb-[20px]",
+      )}
+    >
+      <View
+        className={cn(
+          "grow basis-[300px] p-[30px] justify-center",
+          compact && "p-[20px]",
+        )}
+      >
+        <Text className="text-[10px] tracking-[1.8px] text-[#B4D9CD] font-bold">
+          THE AI-200 LEARNING PATH
+        </Text>
+        <Text className="text-[#FFFCEB] text-[36px] leading-[41px] font-bold tracking-[-1.1px] mt-[20px]">
+          Azure AI Developer
+        </Text>
+        <Text className="text-[#C4D8D2] text-[14px] leading-[22px] mt-[14px] max-w-[320px]">
           Azure AI development, one clear idea at a time.
         </Text>
-        <View style={styles.heroTags}>
-          <Text style={styles.heroTag}>EN + FR</Text>
+        <View className="flex-row flex-wrap gap-[8px] mt-[25px]">
+          <Text className="text-[9px] tracking-[1px] text-[#DDEDD9] border-[1px] border-[#5F8272] rounded-[6px] p-[8px]">
+            EN + FR
+          </Text>
         </View>
       </View>
       <View
-        style={[styles.art, compact && styles.compactArt]}
+        className={cn(
+          "h-[270px] w-[310px] max-w-[100%] self-center justify-center items-center",
+          compact && "h-[170px] my-[-35px]",
+        )}
+        style={
+          compact
+            ? { transform: [{ scale: 0.65 }, { translateY: -14 }] }
+            : undefined
+        }
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        <View style={styles.orbit} />
-        <View style={styles.orbitInner} />
-        <View style={styles.blockBack} />
-        <View style={styles.blockFront}>
-          <Text style={styles.artSymbol}>↗</Text>
+        <View className="w-[225px] h-[225px] rounded-[113px] border-[1px] border-[#5B7D6E] absolute" />
+        <View className="w-[165px] h-[165px] rounded-[83px] border-[1px] border-[#5B7D6E] absolute" />
+        <View
+          className="w-[100px] h-[110px] bg-[#C7E7A0] rounded-[16px] absolute top-[49px] left-[81px]"
+          style={{ transform: [{ rotate: "23deg" }] }}
+        />
+        <View
+          className="w-[105px] h-[112px] bg-[#F2A56D] rounded-[16px] justify-center items-center left-[26px] top-[15px]"
+          style={{ transform: [{ rotate: "-12deg" }] }}
+        >
+          <Text className="text-[65px] font-light text-[#173F3B]">↗</Text>
         </View>
-        <View style={styles.artDot} />
+        <View className="absolute w-[19px] h-[19px] rounded-[10px] bg-[#D3EFAC] top-[55px] right-[41px]" />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  hero: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    backgroundColor: "#153E3B",
-    borderRadius: 24,
-    overflow: "hidden",
-    marginBottom: 36,
-  },
-  heroCopy: {
-    flexGrow: 1,
-    flexBasis: 300,
-    padding: 30,
-    justifyContent: "center",
-  },
-  heroKicker: {
-    fontSize: 10,
-    letterSpacing: 1.8,
-    color: "#B4D9CD",
-    fontWeight: "700",
-  },
-  heroTitle: {
-    color: "#FFFCEB",
-    fontSize: 36,
-    lineHeight: 41,
-    fontWeight: "700",
-    letterSpacing: -1.1,
-    marginTop: 20,
-  },
-  heroDescription: {
-    color: "#C4D8D2",
-    fontSize: 14,
-    lineHeight: 22,
-    marginTop: 14,
-    maxWidth: 320,
-  },
-  heroTags: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 25,
-  },
-  heroTag: {
-    fontSize: 9,
-    letterSpacing: 1,
-    color: "#DDEDD9",
-    borderWidth: 1,
-    borderColor: "#5F8272",
-    borderRadius: 6,
-    padding: 8,
-  },
-  art: {
-    height: 270,
-    width: 310,
-    maxWidth: "100%",
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  compactArt: {
-    height: 170,
-    transform: [{ scale: 0.65 }, { translateY: -14 }],
-    marginVertical: -35,
-  },
-  orbit: {
-    width: 225,
-    height: 225,
-    borderRadius: 113,
-    borderWidth: 1,
-    borderColor: "#5B7D6E",
-    position: "absolute",
-  },
-  orbitInner: {
-    width: 165,
-    height: 165,
-    borderRadius: 83,
-    borderWidth: 1,
-    borderColor: "#5B7D6E",
-    position: "absolute",
-  },
-  blockBack: {
-    width: 100,
-    height: 110,
-    backgroundColor: "#C7E7A0",
-    transform: [
-      {
-        rotate: "23deg",
-      },
-    ],
-    borderRadius: 16,
-    position: "absolute",
-    top: 49,
-    left: 81,
-  },
-  blockFront: {
-    width: 105,
-    height: 112,
-    backgroundColor: "#F2A56D",
-    transform: [
-      {
-        rotate: "-12deg",
-      },
-    ],
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    left: 26,
-    top: 15,
-  },
-  artSymbol: {
-    fontSize: 65,
-    fontWeight: "300",
-    color: "#173F3B",
-  },
-  artDot: {
-    position: "absolute",
-    width: 19,
-    height: 19,
-    borderRadius: 10,
-    backgroundColor: "#D3EFAC",
-    top: 55,
-    right: 41,
-  },
-});

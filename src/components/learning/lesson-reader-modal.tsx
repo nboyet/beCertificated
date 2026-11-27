@@ -1,14 +1,7 @@
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Text } from "@/components/ui/text";
+import { Modal, Pressable, ScrollView, View } from "react-native";
 import type { OpenDownloadedLessonResult } from "@/application/learning/open-downloaded-lesson.use-case";
 import { previewLessons } from "./lesson-preview";
-import { sharedStyles } from "./learning-styles";
 
 export function LessonReaderModal({
   result,
@@ -28,10 +21,13 @@ export function LessonReaderModal({
       visible
       onRequestClose={closeReader}
     >
-      <View style={styles.modalBackdrop}>
-        <View style={styles.reader} accessibilityViewIsModal>
-          <View style={styles.readerHeader}>
-            <Text style={sharedStyles.kicker}>
+      <View className="flex-1 justify-center items-center p-[20px] bg-[rgba(15,_35,_32,_0.55)]">
+        <View
+          className="bg-[#EDF3E6] rounded-[18px] p-[24px] w-[100%] max-w-[760px] max-h-[90%] gap-[12px]"
+          accessibilityViewIsModal
+        >
+          <View className="flex-row items-center justify-between gap-[12px]">
+            <Text className="text-[10px] tracking-[1.8px] font-extrabold text-[#08766F] mb-[10px]">
               {result.status === "opened"
                 ? "LESSON PREVIEW"
                 : "CONNECTION REQUIRED"}
@@ -40,17 +36,17 @@ export function LessonReaderModal({
               accessibilityRole="button"
               accessibilityLabel="Close lesson preview"
               onPress={closeReader}
-              style={sharedStyles.close}
+              className="min-h-[44px] justify-center"
             >
-              <Text style={sharedStyles.closeText}>Close ×</Text>
+              <Text className="text-[#315D51] text-[12px]">Close ×</Text>
             </Pressable>
           </View>
-          <ScrollView contentContainerStyle={styles.readerBody}>
+          <ScrollView contentContainerClassName="gap-[12px]">
             {result.status === "opened" ? (
               <>
                 <Text
                   accessibilityRole="header"
-                  style={sharedStyles.sectionTitle}
+                  className="text-[24px] tracking-[-0.6px] font-bold text-foreground"
                 >
                   {
                     previewLessons.find(
@@ -58,16 +54,18 @@ export function LessonReaderModal({
                     )?.title
                   }
                 </Text>
-                <Text style={styles.reading}>{result.lesson.content}</Text>
-                <View style={styles.metadata}>
-                  <Text style={sharedStyles.body}>
+                <Text className="text-[#243E37] leading-[27px] text-[16px]">
+                  {result.lesson.content}
+                </Text>
+                <View className="gap-[6px] border-t-[1px] border-[#D1DDC9] pt-[15px]">
+                  <Text className="text-muted-foreground text-[12px] leading-[19px]">
                     Version {result.lesson.version} · Sample verification date{" "}
                     {result.lesson.verifiedOn}
                   </Text>
-                  <Text style={sharedStyles.body}>
+                  <Text className="text-muted-foreground text-[12px] leading-[19px]">
                     Synthetic content · not a verified teaching lesson
                   </Text>
-                  <Text style={sharedStyles.body}>
+                  <Text className="text-muted-foreground text-[12px] leading-[19px]">
                     Lesson ID: {result.lesson.id}
                   </Text>
                   {result.lesson.sourceLinks.map((link) => (
@@ -76,22 +74,25 @@ export function LessonReaderModal({
                       accessibilityRole="link"
                       accessibilityLabel="Open official Microsoft AI-200 study guide"
                       onPress={() => void openSource(link)}
-                      style={styles.source}
+                      className="min-h-[44px] justify-center"
                     >
-                      <Text style={styles.sourceText}>
+                      <Text className="text-[#08766F] text-[13px] underline">
                         Microsoft study guide ↗
                       </Text>
                     </Pressable>
                   ))}
                   {sourceError && (
-                    <Text accessibilityRole="alert" style={sharedStyles.body}>
+                    <Text
+                      accessibilityRole="alert"
+                      className="text-muted-foreground text-[12px] leading-[19px]"
+                    >
                       {sourceError}
                     </Text>
                   )}
                 </View>
               </>
             ) : (
-              <Text style={styles.reading}>
+              <Text className="text-[#243E37] leading-[27px] text-[16px]">
                 This lesson is not downloaded in the requested language. Save
                 the unlocked sample course in this language from Lessons first.
               </Text>
@@ -102,49 +103,3 @@ export function LessonReaderModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  reader: {
-    backgroundColor: "#EDF3E6",
-    borderRadius: 18,
-    padding: 24,
-    width: "100%",
-    maxWidth: 760,
-    maxHeight: "90%",
-    gap: 12,
-  },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "rgba(15, 35, 32, 0.55)",
-  },
-  readerBody: { gap: 12 },
-  readerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  reading: {
-    color: "#243E37",
-    lineHeight: 27,
-    fontSize: 16,
-  },
-  metadata: {
-    gap: 6,
-    borderTopWidth: 1,
-    borderColor: "#D1DDC9",
-    paddingTop: 15,
-  },
-  source: {
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  sourceText: {
-    color: "#08766F",
-    fontSize: 13,
-    textDecorationLine: "underline",
-  },
-});

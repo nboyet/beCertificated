@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+@import 'uniwind';
+@import './src/global.css';
+
+@theme {
+  --color-background: #f7f7f2;
+  --color-foreground: #213c37;
+  --color-card: #ffffff;
+  --color-card-foreground: #213c37;
+  --color-border: #e1e6db;
+  --color-primary: #173f3b;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #ebefe7;
+  --color-secondary-foreground: #596b5f;
+  --color-muted-foreground: #65726d;
+  --color-accent: #ebefe7;
+  --color-accent-foreground: #213c37;
+  --color-destructive: #b91c1c;
+  --color-input: #d7dfcd;
+  --color-muted: #ebefe7;
+  --color-ring: #08766f;
+}
