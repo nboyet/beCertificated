@@ -1,0 +1,15 @@
+{
+  "lessons": [
+    {
+      "id": "acr-images-tags",
+      "locale": "fr",
+      "content": "Une image de conteneur regroupe une application et ses dépendances pour l’exécuter dans un environnement compatible. Azure Container Registry (ACR) est un registre privé qui stocke et distribue ces images. Il ne lance pas lui-même votre application : un service comme Azure Container Apps récupère l’image pour exécuter un conteneur.\n\nLes images sont organisées dans des dépôts. Par exemple, dans monregistre.azurecr.io/api:v1, monregistre.azurecr.io désigne le registre, api le dépôt et v1 l’étiquette (tag). Une étiquette est un nom lisible associé à une version d’image. Plusieurs étiquettes peuvent désigner la même image.\n\nAttention : une étiquette peut être réaffectée à une autre image. Le nom latest n’indique donc pas automatiquement la version la plus récente. Pour identifier précisément un contenu, utilisez son digest, une empreinte liée au contenu de l’image.\n\nEn pratique, vous construisez une image, vous la poussez vers ACR, puis votre service la récupère. Choisissez des étiquettes explicites pour retrouver vos versions et un digest lorsque vous devez déployer exactement le même contenu.",
+      "version": "1",
+      "verifiedOn": "2026-11-28",
+      "sourceLinks": [
+        "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-200",
+        "https://learn.microsoft.com/en-us/azure/container-registry/container-registry-concepts"
+      ]
+    }
+  ]
+}

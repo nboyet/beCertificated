@@ -29,16 +29,16 @@ export function LessonReaderModal({
           <View className="flex-row items-center justify-between gap-[12px]">
             <Text className="text-[10px] tracking-[1.8px] font-extrabold text-[#08766F] mb-[10px]">
               {result.status === "opened"
-                ? "LESSON PREVIEW"
-                : "CONNECTION REQUIRED"}
+                ? "LEÇON"
+                : "CONNEXION NÉCESSAIRE"}
             </Text>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Close lesson preview"
+              accessibilityLabel="Fermer la leçon"
               onPress={closeReader}
               className="min-h-[44px] justify-center"
             >
-              <Text className="text-[#315D51] text-[12px]">Close ×</Text>
+              <Text className="text-[#315D51] text-[12px]">Fermer ×</Text>
             </Pressable>
           </View>
           <ScrollView contentContainerClassName="gap-[12px]">
@@ -59,25 +59,22 @@ export function LessonReaderModal({
                 </Text>
                 <View className="gap-[6px] border-t-[1px] border-[#D1DDC9] pt-[15px]">
                   <Text className="text-muted-foreground text-[12px] leading-[19px]">
-                    Version {result.lesson.version} · Sample verification date{" "}
+                    Version {result.lesson.version} · Vérifié le{" "}
                     {result.lesson.verifiedOn}
                   </Text>
                   <Text className="text-muted-foreground text-[12px] leading-[19px]">
-                    Synthetic content · not a verified teaching lesson
-                  </Text>
-                  <Text className="text-muted-foreground text-[12px] leading-[19px]">
-                    Lesson ID: {result.lesson.id}
+                    Identifiant : {result.lesson.id}
                   </Text>
                   {result.lesson.sourceLinks.map((link) => (
                     <Pressable
                       key={link}
                       accessibilityRole="link"
-                      accessibilityLabel="Open official Microsoft AI-200 study guide"
+                      accessibilityLabel={`Source Microsoft : ${link}`}
                       onPress={() => void openSource(link)}
                       className="min-h-[44px] justify-center"
                     >
                       <Text className="text-[#08766F] text-[13px] underline">
-                        Microsoft study guide ↗
+                        {link} ↗
                       </Text>
                     </Pressable>
                   ))}
@@ -93,8 +90,7 @@ export function LessonReaderModal({
               </>
             ) : (
               <Text className="text-[#243E37] leading-[27px] text-[16px]">
-                This lesson is not downloaded in the requested language. Save
-                the unlocked sample course in this language from Lessons first.
+                Connectez-vous à Internet puis téléchargez le cours depuis Leçons pour lire cette leçon hors ligne.
               </Text>
             )}
           </ScrollView>

@@ -9,10 +9,10 @@ export default function AppTabs() {
         <View style={styles.nav}>
           <Text style={styles.brand}>bC<Text style={{ color: '#EF9A65' }}>.</Text></Text>
           <TabTrigger name="lessons" href="/" asChild>
-            <TabButton>Lessons</TabButton>
+            <TabButton>Leçons</TabButton>
           </TabTrigger>
           <TabTrigger name="downloads" href="/explore" asChild>
-            <TabButton>Downloads</TabButton>
+            <TabButton>Téléchargements</TabButton>
           </TabTrigger>
         </View>
       </TabList>

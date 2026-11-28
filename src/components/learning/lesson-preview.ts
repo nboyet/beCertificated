@@ -1,3 +1,5 @@
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { CourseAccessReader, LessonSource, DownloadedLessonWriter } from '@/application/learning/save-course-offline.use-case';
 import { lessonSchema } from '@/domain/learning/entities/lesson';
@@ -5,75 +7,76 @@ import type { DownloadedLessonReader } from '@/application/learning/open-downloa
 import type { Lesson, LessonLocale } from '@/domain/learning/entities/lesson';
 import { LessonDownloadStatus } from '@/domain/learning/value-objects/lesson-download';
 
-export const previewLessonId = 'preview-acr-introduction';
-const content: Record<string, Record<LessonLocale, string>> = {
-  [previewLessonId]: {
-    en: 'This is a synthetic lesson preview. A container registry stores container images. Images package an application and its dependencies. A tag gives an image a readable label. This sample demonstrates bilingual offline reading; it is not the agreed AI-200 teaching content.',
-    fr: 'Ceci est un aperçu de leçon fictif. Un registre de conteneurs stocke des images de conteneurs. Une image regroupe une application et ses dépendances. Une étiquette donne un nom lisible à une image. Cet exemple illustre la lecture bilingue hors ligne ; ce n’est pas le contenu pédagogique AI-200 convenu.',
-  },
-  'preview-image-tags': {
-    en: 'Synthetic sample: a tag is a readable label for a container image. Tags can help identify a version. This is sample content, not an agreed AI-200 teaching lesson.',
-    fr: 'Exemple fictif : une étiquette est un nom lisible pour une image de conteneur. Elle peut aider à identifier une version. Ce texte n’est pas une leçon AI-200 validée.',
-  },
-};
-const officialSource = 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-200';
-export const previewCourseId = 'sample-ai-200';
+export const previewLessonId = 'acr-images-tags';
+export const previewCourseId = 'ai-200';
 export const previewLessons = [
-  { id: previewLessonId, title: 'Meet your container registry' },
-  { id: 'preview-image-tags', title: 'Give your images a name' },
-  { id: 'preview-build', title: 'Build an image' },
-  { id: 'preview-push', title: 'Push to a registry' },
-  { id: 'preview-pull', title: 'Pull an image' },
-  { id: 'preview-access', title: 'Registry access' },
-  { id: 'preview-tasks', title: 'Registry tasks' },
-  { id: 'preview-review', title: 'Review your registry' },
+  { id: previewLessonId, title: 'Images et étiquettes dans Azure Container Registry' },
 ] as const;
-export const unlockedIds: readonly string[] = previewLessons.slice(0, 2).map(lesson => lesson.id);
+export const unlockedIds: readonly string[] = previewLessons.map(lesson => lesson.id);
 export const previewAccess: CourseAccessReader = {
   async listUnlockedLessonIds(courseId) {
     return courseId === previewCourseId ? unlockedIds : [];
   },
 };
+function validLesson(value: unknown): Lesson | undefined {
+  const parsed = lessonSchema.safeParse(value);
+  if (!parsed.success) return undefined;
+  const lesson = parsed.data;
+  return unlockedIds.includes(lesson.id) && lesson.locale === 'fr' &&
+    lesson.content.trim().length > 0 && lesson.content.trim().split(/\s+/u).length < 250 &&
+    lesson.version.trim().length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(lesson.verifiedOn) &&
+    lesson.sourceLinks.length > 0 && lesson.sourceLinks.every(link => {
+      try {
+        const url = new URL(link);
+        return url.protocol === 'https:' && url.hostname === 'learn.microsoft.com' && !url.username && !url.password;
+      } catch {
+        return false;
+      }
+    })
+    ? lesson : undefined;
+}
 export const previewSource: LessonSource = {
   async fetch(id, locale) {
-    if (!unlockedIds.includes(id)) return undefined;
-    return {
-      id,
-      locale,
-      content: content[id][locale],
-      version: 'preview-1',
-      verifiedOn: '2026-11-22',
-      sourceLinks: [officialSource],
-    };
+    if (!unlockedIds.includes(id) || locale !== 'fr') return undefined;
+    const configured = process.env.EXPO_PUBLIC_CONTENT_ORIGIN;
+    const host = Constants.expoConfig?.hostUri;
+    const origin = configured ?? (Platform.OS === 'web' ? window.location.origin : __DEV__ && host ? `http://${host}` : undefined);
+    if (!origin) return undefined;
+    try {
+      if (configured && new URL(configured).protocol !== 'https:') return undefined;
+      const response = await fetch(new URL('/courses/ai-200.fr.json', origin).href);
+      if (!response.ok) return undefined;
+      const payload: unknown = await response.json();
+      if (!payload || typeof payload !== 'object' || !('lessons' in payload) || !Array.isArray(payload.lessons)) return undefined;
+      const lessons = payload.lessons.map(validLesson);
+      if (lessons.length !== unlockedIds.length || lessons.some(lesson => !lesson)) return undefined;
+      return lessons.find(lesson => lesson?.id === id && lesson.locale === locale);
+    } catch {
+      return undefined;
+    }
   },
 };
-const storagePrefix = '@beCertified/sample-download/v1/';
+const storagePrefix = '@beCertified/course-download/v1/';
 const storageKey = (id: string, locale: LessonLocale) => `${storagePrefix}${encodeURIComponent(id)}/${locale}`;
 export const previewDownloads: DownloadedLessonReader & DownloadedLessonWriter = {
   async read(id, locale) {
     const raw = await AsyncStorage.getItem(storageKey(id, locale));
     if (raw === null) return { status: LessonDownloadStatus.Missing };
     try {
-      const parsed = lessonSchema.safeParse(JSON.parse(raw));
-      if (
-        parsed.success &&
-        parsed.data.id === id &&
-        parsed.data.locale === locale &&
-        parsed.data.sourceLinks.length === 1 &&
-        parsed.data.sourceLinks[0] === officialSource
-      ) {
-        return { status: LessonDownloadStatus.Complete, lesson: parsed.data };
+      const lesson = validLesson(JSON.parse(raw));
+      if (lesson && lesson.id === id && lesson.locale === locale) {
+        return { status: LessonDownloadStatus.Complete, lesson };
       }
     } catch {
-      // Invalid stored sample content is unavailable.
+      // Invalid stored content is unavailable.
     }
     return { status: LessonDownloadStatus.Incomplete };
   },
   async save(lesson) {
     try {
-      const parsed = lessonSchema.safeParse(lesson);
-      if (!parsed.success || !unlockedIds.includes(lesson.id)) return false;
-      await AsyncStorage.setItem(storageKey(lesson.id, lesson.locale), JSON.stringify(parsed.data));
+      const parsed = validLesson(lesson);
+      if (!parsed) return false;
+      await AsyncStorage.setItem(storageKey(lesson.id, lesson.locale), JSON.stringify(parsed));
       return true;
     } catch {
       return false;
@@ -83,10 +86,8 @@ export const previewDownloads: DownloadedLessonReader & DownloadedLessonWriter =
 export async function listPreviewDownloads(): Promise<readonly Lesson[]> {
   const lessons: Lesson[] = [];
   for (const id of unlockedIds) {
-    for (const locale of ['en', 'fr'] as const) {
-      const download = await previewDownloads.read(id, locale);
-      if (download.status === LessonDownloadStatus.Complete) lessons.push(download.lesson);
-    }
+    const download = await previewDownloads.read(id, 'fr');
+    if (download.status === LessonDownloadStatus.Complete) lessons.push(download.lesson);
   }
   return lessons;
 }

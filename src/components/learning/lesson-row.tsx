@@ -23,7 +23,7 @@ export function LessonRow({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${lesson.title}, ${lesson.locale.toUpperCase()}, ${locked ? "locked sample" : downloaded ? "saved offline" : "not saved"}`}
+      accessibilityLabel={`${lesson.title}, ${lesson.locale.toUpperCase()}, ${locked ? "locked sample" : downloaded ? "disponible hors ligne" : "non téléchargée"}`}
       accessibilityState={{ disabled: locked }}
       disabled={locked}
       onPress={() => void open(lesson.id, lesson.locale)}
@@ -41,7 +41,7 @@ export function LessonRow({
         <Text className="text-muted-foreground text-[12px] leading-[19px]">
           {locked
             ? "Locked · sample access state"
-            : `Synthetic sample · ${lesson.locale.toUpperCase()}`}
+            : `Leçon · ${lesson.locale.toUpperCase()}`}
         </Text>
         {!locked && (
           <Text
@@ -51,7 +51,7 @@ export function LessonRow({
                 : "text-muted-foreground text-[12px] leading-[19px]"
             }
           >
-            {downloaded ? "✓  Saved offline" : "Not saved on this device"}
+            {downloaded ? "✓  Disponible hors ligne" : "Non téléchargée sur cet appareil"}
           </Text>
         )}
       </View>

@@ -17,17 +17,17 @@ export function CourseHero({ compact }: { compact: boolean }) {
         )}
       >
         <Text className="text-[10px] tracking-[1.8px] text-[#B4D9CD] font-bold">
-          THE AI-200 LEARNING PATH
+          VOTRE PARCOURS AI-200
         </Text>
         <Text className="text-[#FFFCEB] text-[36px] leading-[41px] font-bold tracking-[-1.1px] mt-[20px]">
-          Azure AI Developer
+          AI-200 · Azure
         </Text>
         <Text className="text-[#C4D8D2] text-[14px] leading-[22px] mt-[14px] max-w-[320px]">
-          Azure AI development, one clear idea at a time.
+          Comprendre Azure AI, une idée à la fois.
         </Text>
         <View className="flex-row flex-wrap gap-[8px] mt-[25px]">
           <Text className="text-[9px] tracking-[1px] text-[#DDEDD9] border-[1px] border-[#5F8272] rounded-[6px] p-[8px]">
-            EN + FR
+            FRANÇAIS
           </Text>
         </View>
       </View>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { saveCourseOffline } from "@/application/learning/save-course-offline.use-case";
 import { Linking } from "react-native";
@@ -18,7 +18,7 @@ import {
 } from "./lesson-preview";
 
 export function useLearningScreen(downloads: boolean) {
-  const [locale, setLocale] = useState<LessonLocale>("en");
+  const locale: LessonLocale = "fr";
   const [sourceError, setSourceError] = useState<string | null>(null);
   const [result, setResult] = useState<OpenDownloadedLessonResult | null>(null);
   const [saved, setSaved] = useState<readonly Lesson[]>([]);
@@ -40,7 +40,7 @@ export function useLearningScreen(downloads: boolean) {
     } catch {
       if (version === refreshVersion.current) {
         setSaved([]);
-        setStorageError("Unable to read saved samples. Try again.");
+        setStorageError("Impossible de lire les leçons enregistrées. Réessayez.");
       }
     } finally {
       if (version === refreshVersion.current) setLoading(false);
@@ -63,13 +63,8 @@ export function useLearningScreen(downloads: boolean) {
       if (version === openVersion.current) setResult(opened);
     } catch {
       if (version === openVersion.current)
-        setStorageError("Unable to read this saved sample. Try again.");
+        setStorageError("Impossible de lire cette leçon. Réessayez.");
     }
-  }
-  function selectLanguage(language: LessonLocale) {
-    setLocale(language);
-    openVersion.current++;
-    setResult(null);
   }
   async function save() {
     if (savePending.current) return;
@@ -85,13 +80,13 @@ export function useLearningScreen(downloads: boolean) {
       await refresh();
       if (outcome.status === "interrupted") {
         setStorageError(
-          "Saving stopped. Completed samples are retained. Retry to save the remaining samples.",
+          "Téléchargement interrompu. Les leçons enregistrées sont conservées. Réessayez pour terminer.",
         );
       }
     } catch {
       await refresh();
       setStorageError(
-        "Saving stopped. Completed samples are retained. Retry to save the remaining samples.",
+        "Téléchargement interrompu. Les leçons enregistrées sont conservées. Réessayez pour terminer.",
       );
     } finally {
       savePending.current = false;
@@ -130,7 +125,7 @@ export function useLearningScreen(downloads: boolean) {
       await Linking.openURL(link);
     } catch {
       setSourceError(
-        "Unable to open the study guide. Check your connection and try again.",
+        "Impossible d’ouvrir la source. Vérifiez votre connexion puis réessayez.",
       );
     }
   }
@@ -144,7 +139,6 @@ export function useLearningScreen(downloads: boolean) {
     storageError,
     refresh,
     open,
-    selectLanguage,
     save,
     courseSaved,
     closeReader,

@@ -30,6 +30,6 @@ Use ZOMBIES to guide observable examples as relevant to the agreed contract. Pri
 
 ## Immediate next step
 
-The **Open a downloaded lesson** and **Save a course offline** contracts in PRODUCT_RULES.md are agreed and implemented test-first; all 11 Vitest tests and the TypeScript check pass. The authorized Expo Lessons/Downloads preview persists synthetic lesson content and metadata with AsyncStorage 2.2.0: only the first 2 of 8 sample lessons can be saved in the selected locale, partial saves are retained for retry, and stored localizations open through the existing use case.
+The **Open a downloaded lesson** and **Save a course offline** contracts are implemented with bilingual synthetic regression examples. Preserve those contracts and existing persistent-download recovery behavior.
 
-Collaborate explicitly on the remaining production contracts and tests before implementing them, including authentication, course delivery/access, learner-data persistence, completion, and synchronization. Roadmap requirements and Expo scaffold authorization do not authorize additional behavior.
+The agreed next increment in PRODUCT_RULES.md is a French-only personal release for one local learner without an account, with full published access and one real static ACR images-and-tags lesson downloaded only by explicit course action. Execute the agreed fresh-offline and download/restart-offline examples test-first; report actual checks before claiming acceptance. Local progress, quizzes, hands-on practice, and a timed mock are next collaboration topics. Accounts, synchronization, monetization, and English delivery are deferred, not prerequisites for this increment.

@@ -4,17 +4,16 @@ import Lessons from '../src/app/index';
 import Downloads from '../src/app/explore';
 
 const mockRecords = new Map<string, string>();
-let mockInterruptSecondEnglishWrite = false;
+let mockOnline = false;
+let mockInvalidContent = false;
+let mockWriteFails = false;
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   __esModule: true,
   default: {
     getItem: async (key: string) => mockRecords.get(key) ?? null,
     setItem: async (key: string, value: string) => {
-      if (mockInterruptSecondEnglishWrite && key.endsWith('/preview-image-tags/en')) {
-        mockInterruptSecondEnglishWrite = false;
-        throw new Error('Storage interrupted');
-      }
+      if (mockWriteFails) throw new Error('Storage interrupted');
       mockRecords.set(key, value);
     },
   },
@@ -22,81 +21,67 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 
 beforeEach(() => {
   mockRecords.clear();
-  mockInterruptSecondEnglishWrite = false;
+  mockOnline = false;
+  mockInvalidContent = false;
+  mockWriteFails = false;
+  process.env.EXPO_PUBLIC_CONTENT_ORIGIN = "https://content.becertified.test";
+  globalThis.fetch = async (url) => {
+    if (url !== "https://content.becertified.test/courses/ai-200.fr.json") throw new Error("Unknown content URL");
+    if (!mockOnline) throw new Error('Offline');
+    return new Response(JSON.stringify(mockInvalidContent ? { lessons: [] } : require('../public/courses/ai-200.fr.json')));
+  };
 });
 
 async function openRoute(path = '/') {
   await renderRouter({ index: Lessons, explore: Downloads }, { initialUrl: path });
-  await waitFor(() => expect(screen.queryByText('Loading saved samples…')).toBeNull());
+  await waitFor(() => expect(screen.queryByText('Chargement des leçons enregistrées…')).toBeNull());
 }
 
 async function press(name: string) {
   await fireEvent.press(screen.getByRole('button', { name }));
 }
 
-async function save(language: 'English' | 'French') {
-  await press(`Save all unlocked sample lessons in ${language}`);
-  await screen.findByRole('button', { name: `Saved offline. Save all unlocked sample lessons in ${language}` });
-}
+const unsaved = 'Images et étiquettes dans Azure Container Registry, FR, non téléchargée';
+const saved = 'Images et étiquettes dans Azure Container Registry, FR, disponible hors ligne';
+const save = 'Télécharger le cours en français';
 
-async function closeReader() {
-  await press('Close lesson preview');
-}
-
-test('empty Downloads and unsaved unlocked lessons require saving while six locked lessons stay disabled', async () => {
-  await openRoute('/explore');
-  expect(screen.getByText('0 saved localizations · English + français')).toBeTruthy();
-  expect(screen.getByText('No samples saved yet. Save the unlocked samples from Lessons, then read them here offline.')).toBeTruthy();
-  await cleanup();
+test('première ouverture hors ligne demande une connexion en français sans verrou ni connexion au compte', async () => {
   await openRoute();
-  expect(screen.getAllByRole('button', { name: /locked sample$/, disabled: true })).toHaveLength(6);
-  await press('Meet your container registry, EN, not saved');
-  expect(await screen.findByText('CONNECTION REQUIRED')).toBeTruthy();
-  expect(screen.getByText('This lesson is not downloaded in the requested language. Save the unlocked sample course in this language from Lessons first.')).toBeTruthy();
+  expect(screen.queryAllByRole('button', { disabled: true })).toHaveLength(0);
+  await press(unsaved);
+  expect(await screen.findByText('CONNEXION NÉCESSAIRE')).toBeTruthy();
+  expect(screen.getByText('Connectez-vous à Internet puis téléchargez le cours depuis Leçons pour lire cette leçon hors ligne.')).toBeTruthy();
 });
 
-test('English and French saves stay independent and persist four localizations with bilingual provenance', async () => {
+test('téléchargement explicite puis redémarrage hors ligne conserve contenu français et sources accessibles', async () => {
+  mockOnline = true;
   await openRoute();
-  await save('English');
-  await press('Lire en français');
-  expect(screen.queryByRole('button', { name: /^Saved offline\./ })).toBeNull();
-  await press('Meet your container registry, FR, not saved');
-  expect(await screen.findByText('CONNECTION REQUIRED')).toBeTruthy();
-  await closeReader();
-  await save('French');
+  await press(save);
+  await screen.findByRole('button', { name: 'Cours disponible hors ligne. Télécharger le cours en français' });
   await cleanup();
+  mockOnline = false;
   await openRoute('/explore');
-  expect(screen.getByText('4 saved localizations · English + français')).toBeTruthy();
-  expect(screen.getAllByRole('button', { name: /, (EN|FR), saved offline$/ })).toHaveLength(4);
-  for (const [locale, body] of [
-    ['EN', 'This is a synthetic lesson preview. A container registry stores container images. Images package an application and its dependencies. A tag gives an image a readable label. This sample demonstrates bilingual offline reading; it is not the agreed AI-200 teaching content.'],
-    ['FR', 'Ceci est un aperçu de leçon fictif. Un registre de conteneurs stocke des images de conteneurs. Une image regroupe une application et ses dépendances. Une étiquette donne un nom lisible à une image. Cet exemple illustre la lecture bilingue hors ligne ; ce n’est pas le contenu pédagogique AI-200 convenu.'],
-  ]) {
-    await press(`Meet your container registry, ${locale}, saved offline`);
-    expect(await screen.findByText(body)).toBeTruthy();
-    expect(screen.getByText('Lesson ID: preview-acr-introduction')).toBeTruthy();
-    expect(screen.getByText('Version preview-1 · Sample verification date 2026-11-22')).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Open official Microsoft AI-200 study guide' })).toBeTruthy();
-    await closeReader();
-  }
+  await press(saved);
+  expect(await screen.findByText(/Une image de conteneur regroupe/)).toBeTruthy();
+  expect(screen.getByText('Identifiant : acr-images-tags')).toBeTruthy();
+  expect(screen.getByText('Version 1 · Vérifié le 2026-11-28')).toBeTruthy();
+  expect(screen.getAllByRole('link', { name: /Source Microsoft/ })).toHaveLength(2);
 });
 
-test('interrupted second English write retains first lesson and retry completes course', async () => {
-  mockInterruptSecondEnglishWrite = true;
+test.each(['réseau', 'contenu', 'stockage'])('échec %s permet de réessayer sans faux succès', async (failure) => {
+  mockOnline = failure !== 'réseau';
+  mockInvalidContent = failure === 'contenu';
+  mockWriteFails = failure === 'stockage';
   await openRoute();
-  await press('Save all unlocked sample lessons in English');
-  expect(await screen.findByText('Saving stopped. Completed samples are retained. Retry to save the remaining samples.')).toBeTruthy();
-  expect(screen.queryByRole('button', { name: /^Saved offline\./ })).toBeNull();
-  await press('Meet your container registry, EN, saved offline');
-  expect(await screen.findByText('Lesson ID: preview-acr-introduction')).toBeTruthy();
-  await closeReader();
-  await press('Give your images a name, EN, not saved');
-  expect(await screen.findByText('CONNECTION REQUIRED')).toBeTruthy();
-  await closeReader();
-  await save('English');
-  await press('Give your images a name, EN, saved offline');
-  expect(await screen.findByText('Lesson ID: preview-image-tags')).toBeTruthy();
-  await closeReader();
-  await press('Meet your container registry, EN, saved offline');
-  expect(await screen.findByText('Lesson ID: preview-acr-introduction')).toBeTruthy();
+  await press(save);
+  expect(await screen.findByText('Téléchargement interrompu. Les leçons enregistrées sont conservées. Réessayez pour terminer.')).toBeTruthy();
+  expect(screen.queryByRole('button', { name: /^Cours disponible/ })).toBeNull();
+  await press(unsaved);
+  expect(await screen.findByText('CONNEXION NÉCESSAIRE')).toBeTruthy();
+  await press('Fermer la leçon');
+  mockOnline = true;
+  mockInvalidContent = false;
+  mockWriteFails = false;
+  await press(save);
+  await screen.findByRole('button', { name: 'Cours disponible hors ligne. Télécharger le cours en français' });
 });
