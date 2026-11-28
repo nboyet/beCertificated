@@ -66,6 +66,17 @@ The under-250-word limit and shared content identity remain applicable. English 
 - Both eventual languages must be supported; precise translation, fallback, and word-count conventions remain unresolved.
 - Lessons must be reusable within curricula/themes while retaining their identity and source information.
 
+### Accepted editorial and UX preferences
+
+- Prefer useful content over decorative slogans. Remove “Préparez AI-200, une idée à la fois.” and “Comprendre Azure AI, une idée à la fois.”; do not replace them with filler. Preserve legible accents, including the cedilla in “Leçons”, with visual verification.
+- Introduce technical lessons through a concrete example before dense definitions. For ACR images and tags, use an image reference such as `monregistre.azurecr.io/api:v1` to ground the explanation.
+- On first occurrence, italicize the English technical term and follow it with the Microsoft French term in parentheses. Preserve literal command and resource identifiers.
+- Include relevant, commented, copy-ready Bash and PowerShell examples in fenced blocks. Downloaded lessons must retain their formatting and permit offline consultation and copying; running Azure commands may still require connectivity and Azure access. Commands do not authorize resource provisioning.
+- Changes to lesson structure must account for already downloaded content and earlier stored formats. Agree update/recovery behavior and observable tests before implementation; do not silently discard downloads.
+- The course hero is currently static. Its destination and opening behavior remain undecided and need explicit agreement before navigation changes.
+
+**Pending proposal, not a rule change:** use 250 words as a soft prose target excluding code and comments. Explicit approval is required before changing the existing strict under-250-word rule or its validation; the counting convention remains unresolved. Agree use cases and observable tests before implementing these editorial or UI changes.
+
 ## Later practice and review
 
 Local quizzes, hands-on practice, and a timed mock covering official objectives are next preparation goals. Detailed contracts remain open; commercial review limits below apply only to a later commercial release.
